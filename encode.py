@@ -1,5 +1,7 @@
 import sys
 import binascii
+import numpy as np
+from tqdm import tqdm
 
 
 def main():
@@ -11,21 +13,25 @@ def main():
 	reverse_encoding = {val: key for (key, val) in encoding.items()}
 
 	# read in file, convert to bits, and encode to dna
-	with open(fn_in, 'rb') as f_in:
+	with open(fn_in, 'r') as f_in:
+		s = f_in.read()	
+		print('converting to bits...')
+		bits = convert_to_bits(s)
+		print('encoding...')
+		dna = encode(bits, encoding)
 		with open(fn_out, 'w') as f_out:
-			data = f_in.read()
-			# convert input file data into dna
-			bits = convert_to_bits(data)
-			dna = encode(bits, encoding)
 			f_out.write(dna)
 
 
-def convert_to_bits(data):
+def convert_to_bits(fn_in):
 	""" Convert input data into bits """
-	hexa = data.hex()
-	deci = int(hexa, 16)
-	bits = bin(deci)[2:].zfill(8)
-	return bits
+	result = []
+	for c in fn_in:
+		bits = bin(ord(c))[2:]
+		bits = '00000000'[len(bits):] + bits
+		result.extend(bits)
+		# result.extend([int(b) for b in bits])
+	return ''.join([i for i in result])
 
 
 def encode(bits, encoding):
