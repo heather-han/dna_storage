@@ -1,7 +1,10 @@
+# encode.py
+# Encodes a given input file, and outputs a DNA sequence
+#
+# usage: python encode.py <input_file_path>
+
+
 import sys
-import binascii
-import numpy as np
-from tqdm import tqdm
 
 
 def main():
@@ -13,21 +16,21 @@ def main():
 	reverse_encoding = {val: key for (key, val) in encoding.items()}
 
 	# read in file, convert to bits, and encode to dna
-	with open(fn_in, 'r') as f_in:
-		s = f_in.read()	
+	with open(fn_in, 'rb') as f_in:
+		data = f_in.read()	
 		print('converting to bits...')
-		bits = convert_to_bits(s)
+		bits = convert_to_bits(data)
 		print('encoding...')
 		dna = encode(bits, encoding)
 		with open(fn_out, 'w') as f_out:
 			f_out.write(dna)
 
 
-def convert_to_bits(fn_in):
+def convert_to_bits(data):
 	""" Convert input data into bits """
 	result = []
-	for c in fn_in:
-		bits = bin(ord(c))[2:]
+	for c in data:
+		bits = bin(c)[2:]
 		bits = '00000000'[len(bits):] + bits
 		result.extend(bits)
 		# result.extend([int(b) for b in bits])
