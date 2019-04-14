@@ -20,7 +20,7 @@ def main(path):
 		fn_recovered = fn_in.split('.')[0] + '.' + fn_in.split('.')[1] + '.recovered'
 
 		# encoding to use for converting bits to genomic sequence
-		encoding = {b'00': 'A', b'01': 'C', b'10': 'G', b'11': 'T'}
+		encoding = {'00': 'A', '01': 'C', '10': 'G', '11': 'T'}
 		reverse_encoding = {val: key for (key, val) in encoding.items()}
 
 		# read in file, convert from dna to bits
@@ -39,15 +39,17 @@ def main(path):
 
 def decode(dna, reverse_encoding):
 	""" Decode DNA sequence into bits """
-	bits = b""
-	for base in dna:
-		bits += reverse_encoding[base]
+	bits = ''.join([reverse_encoding[base] for base in dna])
 	return bits
 
 
 def convert_from_bits(bits):
 	""" Convert from bits to original file content """
-	pass
+	bits_int = int(bits, 2)
+	bits_hex = hex(bits_int)
+	byte_arr = bytearray.fromhex(bits_hex[2:])
+	return byte_arr
+
 
 if __name__ == '__main__':
 	main('convert')
