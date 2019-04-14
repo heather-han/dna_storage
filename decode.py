@@ -32,9 +32,9 @@ def main(path):
 				f_out.write(bits)
 
 			# # convert bits into original data and write to file
-			# with open(fn_recovered, 'w') as f_out:
-			# 	data = convert_from_bits(bits)
-			# 	f_out.write(data)
+			with open(fn_recovered, 'w') as f_out:
+				data = convert_from_bits(bits)
+				f_out.write(data)
 
 
 def decode(dna, reverse_encoding):
