@@ -10,6 +10,7 @@ import os
 def main(path, file_type):
 	name_list = []
 	file_list = []
+	# walk through the folder, pick out the file that belong to the file type you want
 	for fpathe, dirs, i in os.walk(path):
 		for ff in i:
 			a = ff.split('.')
@@ -20,7 +21,7 @@ def main(path, file_type):
 				continue
 	for files in file_list:
 		fn_in = files
-		fn_out = fn_in.split('.')[0] + '.dna'
+		fn_out = fn_in.split('.')[0] + '.' + fn_in.split('.')[1] + '.dna'
 
 		# encoding to use for converting bits to genomic sequence
 		encoding = {'00': 'A', '01': 'C', '10': 'G', '11': 'T'}
@@ -59,4 +60,3 @@ def encode(bits, encoding):
 
 if __name__ == '__main__':
 	main('convert', 'png')
-	# print(sys.argv[1])
