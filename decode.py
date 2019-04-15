@@ -1,41 +1,34 @@
-import os
-import struct
+# decode.py
+# Decodes a given input file, and outputs a decoded file in bits, as well 
+# as the orginal recovered file
+#
+# usage: python decode.py <input_file_path>
 
 
-def main(path):
-	name_list = []
-	file_list = []
-	# walk through the folder, pick out the .dna file
-	for fpathe, dirs, i in os.walk(path):
-		for ff in i:
-			a = ff.split('.')
-			if a[-1] == 'dna':
-				name_list.append(a[0])
-				file_list.append(os.path.join(fpathe, ff))
-			else:
-				continue
-	for file in file_list:
-		fn_in = file
-		fn_bits = fn_in.split('.')[0] + '_recovered.' + fn_in.split('.')[1]
-		fn_recovered = fn_in.split('.')[0] + '.' + fn_in.split('.')[1] + '.recovered'
+import sys
 
-		# encoding to use for converting bits to genomic sequence
-		encoding = {'00': 'A', '01': 'C', '10': 'G', '11': 'T'}
-		reverse_encoding = {val: key for (key, val) in encoding.items()}
 
-		# read in file, convert from dna to bits
-		with open(fn_in, 'r') as f_in:
-			dna = f_in.read()
-			bits = decode(dna, reverse_encoding)
-			# convert input file data into bits and write to file
-			# with open(fn_bits, 'wb') as f_out:
-			# 	bits = decode(dna, reverse_encoding)
-			# 	f_out.write(bits)
+def main():
+	fn_in = sys.argv[1]
+	# fn_bits = fn_in.split('.')[0] + '.bits'
+	fn_recovered = fn_in.split('.')[0] + '.recovered'
 
-			# # convert bits into original data and write to file
-			with open(fn_bits, 'wb') as f_out:
-				data = convert_from_bits(bits)
-				f_out.write(data)
+	# encoding to use for converting bits to genomic sequence
+	encoding = {'00': 'A', '01': 'C', '10': 'G', '11': 'T'}
+	reverse_encoding = {val: key for (key, val) in encoding.items()}
+
+	# read in file, convert from dna to bits, then recover the original data
+	with open(fn_in, 'r') as f_in:
+		dna = f_in.read()
+		print('decoding...')
+		bits = decode(dna, reverse_encoding)
+		# with open(fn_bits, 'wb') as f_out:
+		# 	f_out.write(bits)
+		print('converting to original format...')
+		data = convert_from_bits(bits)
+		# print(data[:50])
+		with open(fn_recovered, 'wb') as f_out:
+			f_out.write(data)
 
 
 def decode(dna, reverse_encoding):
@@ -53,4 +46,4 @@ def convert_from_bits(bits):
 
 
 if __name__ == '__main__':
-	main('convert')
+	main()
