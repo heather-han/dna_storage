@@ -1,6 +1,4 @@
 import os
-import struct
-
 
 def main(path):
 	name_list = []
@@ -17,8 +15,6 @@ def main(path):
 	for file in file_list:
 		fn_in = file
 		fn_bits = fn_in.split('.')[0] + '_recovered.' + fn_in.split('.')[1]
-		fn_recovered = fn_in.split('.')[0] + '.' + fn_in.split('.')[1] + '.recovered'
-
 		# encoding to use for converting bits to genomic sequence
 		encoding = {'00': 'A', '01': 'C', '10': 'G', '11': 'T'}
 		reverse_encoding = {val: key for (key, val) in encoding.items()}
@@ -33,9 +29,11 @@ def main(path):
 			# 	f_out.write(bits)
 
 			# # convert bits into original data and write to file
-			with open(fn_bits, 'wb') as f_out:
-				data = convert_from_bits(bits)
-				f_out.write(data)
+			convert_from_bites2(bits, fn_bits)
+			# with open(fn_bits, 'wb') as f_out:
+			# 	data = convert_from_bits(bits)
+			# 	f_out.write(data)
+	print('decode Done')
 
 
 def decode(dna, reverse_encoding):
@@ -51,6 +49,13 @@ def convert_from_bits(bits):
 	byte_arr = bytearray.fromhex(bits_hex[2:])
 	return byte_arr
 
+def convert_from_bites2(bits, out_file):
+	f = open(out_file, 'wb')
+	for i in range(0, len(bits), 8):
+		a = bits[i: i+8]
+		bits_int = int(a, 2)
+		byte_arr = bytes([bits_int])
+		f.write(byte_arr)
 
 if __name__ == '__main__':
 	main('convert')
