@@ -22,18 +22,11 @@ def main(path):
 		# read in file, convert from dna to bits
 		with open(fn_in, 'r') as f_in:
 			dna = f_in.read()
+			print('decoding to bits...')
 			bits = decode(dna, reverse_encoding)
-			# convert input file data into bits and write to file
-			# with open(fn_bits, 'wb') as f_out:
-			# 	bits = decode(dna, reverse_encoding)
-			# 	f_out.write(bits)
-
-			# # convert bits into original data and write to file
-			convert_from_bites2(bits, fn_bits)
-			# with open(fn_bits, 'wb') as f_out:
-			# 	data = convert_from_bits(bits)
-			# 	f_out.write(data)
-	print('decode Done')
+			print('converting from bits to original format...')
+			bits_to_bytes(bits, fn_bits)
+	print('Decoding finished!')
 
 
 def decode(dna, reverse_encoding):
@@ -42,20 +35,22 @@ def decode(dna, reverse_encoding):
 	return bits
 
 
-def convert_from_bits(bits):
-	""" Convert from bits to original file content """
-	bits_int = int(bits, 2)
-	bits_hex = hex(bits_int)
-	byte_arr = bytearray.fromhex(bits_hex[2:])
-	return byte_arr
+# def convert_from_bits(bits):
+# 	""" Convert from bits to original file content """
+# 	bits_int = int(bits, 2)
+# 	bits_hex = hex(bits_int)
+# 	byte_arr = bytearray.fromhex(bits_hex[2:])
+# 	return byte_arr
 
-def convert_from_bites2(bits, out_file):
-	f = open(out_file, 'wb')
-	for i in range(0, len(bits), 8):
-		a = bits[i: i+8]
-		bits_int = int(a, 2)
-		byte_arr = bytes([bits_int])
-		f.write(byte_arr)
+
+def bits_to_bytes(bits, out_file):
+	with open(out_file, 'wb') as f:
+		for i in range(0, len(bits), 8):
+			a = bits[i: i+8]
+			bits_int = int(a, 2)
+			byte_arr = bytes([bits_int])
+			f.write(byte_arr)
+
 
 if __name__ == '__main__':
 	main('convert')

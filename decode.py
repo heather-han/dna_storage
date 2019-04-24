@@ -10,7 +10,6 @@ import sys
 
 def main():
 	fn_in = sys.argv[1]
-	# fn_bits = fn_in.split('.')[0] + '.bits'
 	fn_recovered = fn_in.split('.')[0] + '.recovered'
 
 	# encoding to use for converting bits to genomic sequence
@@ -20,15 +19,11 @@ def main():
 	# read in file, convert from dna to bits, then recover the original data
 	with open(fn_in, 'r') as f_in:
 		dna = f_in.read()
-		print('decoding...')
+		print('decoding to bits...')
 		bits = decode(dna, reverse_encoding)
-		# with open(fn_bits, 'wb') as f_out:
-		# 	f_out.write(bits)
-		print('converting to original format...')
-		data = convert_from_bits(bits)
-		# print(data[:50])
-		with open(fn_recovered, 'wb') as f_out:
-			f_out.write(data)
+		print('converting from bits to original format...')
+		bits_to_bytes(bits)
+	print('Decoding finished!')
 
 
 def decode(dna, reverse_encoding):
@@ -37,12 +32,21 @@ def decode(dna, reverse_encoding):
 	return bits
 
 
-def convert_from_bits(bits):
-	""" Convert from bits to original file content """
-	bits_int = int(bits, 2)
-	bits_hex = hex(bits_int)
-	byte_arr = bytearray.fromhex(bits_hex[2:])
-	return byte_arr
+# def convert_from_bits(bits):
+# 	""" Convert from bits to original file content """
+# 	bits_int = int(bits, 2)
+# 	bits_hex = hex(bits_int)
+# 	byte_arr = bytearray.fromhex(bits_hex[2:])
+# 	return byte_arr
+
+
+def bits_to_bytes(bits, out_file):
+	with open(out_file, 'wb') as f:
+		for i in range(0, len(bits), 8):
+			a = bits[i: i+8]
+			bits_int = int(a, 2)
+			byte_arr = bytes([bits_int])
+			f.write(byte_arr)
 
 
 if __name__ == '__main__':
