@@ -18,7 +18,7 @@ def gui():
     lb2.grid(row=1, columnspan=3)
     lb3 = tk.Label(root, text='')
     lb3.grid(row=2, columnspan=3)
-    lb4 = tk.Label(text='Please enter the suffix of the file you choose: ')
+    lb4 = tk.Label(text='Please enter the format of the file you choose: ')
     lb4.grid(row=3, column=0)
     lb5 = tk.Label(root, text='')
     lb5.grid(row=4, columnspan=3)
