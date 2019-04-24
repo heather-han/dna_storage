@@ -4,7 +4,7 @@ import random
 from tqdm import tqdm
 
 
-def main(path, error_rate=0.0001):
+def main(path, error_rate=0.1):
 	name_list = []
 	file_list = []
 	# walk through the folder, pick out the .dna file
@@ -42,18 +42,33 @@ def main(path, error_rate=0.0001):
 	print('Decoding finished!')
 
 
-def add_error(dna, bases, error_rate):
-	dna_list = [i for i in dna]
-	for i in tqdm(range(int(len(dna) * error_rate))):
-		idx = random.randint(0, len(dna) - 1)
-
-		# exclude the current base from possible bases
-		cur_base = dna_list[idx]
-		possible_bases = copy.deepcopy(bases)
-		possible_bases.remove(cur_base)
-		new_base = random.choice(possible_bases)
-		dna_list[idx] = new_base
-	dna = ''.join(dna_list)
+def add_error(dna, bases, error_rate, coverage=20):
+	dna_list2 = [i for i in dna]
+	dna_list = copy.deepcopy(dna_list2)
+	record = [[] for i in dna]
+	recover_list = []
+	for coverages in tqdm(range(coverage)):
+		for i in range(int(len(dna) * error_rate)):
+			idx = random.randint(0, len(dna) - 1)
+			# exclude the current base from possible bases
+			cur_base = dna_list[idx]
+			possible_bases = copy.deepcopy(bases)
+			possible_bases.remove(cur_base)
+			new_base = random.choice(possible_bases)
+			dna_list[idx] = new_base
+			record[idx].append(new_base)
+	for i in tqdm(range(len(record))):
+		base_dic = {'A': 0, 'C': 0, 'G': 0, 'T': 0}
+		base_l = ['A', 'C', 'G', 'T']
+		for j in record[i]:
+			base_dic[j] += 1
+		base_dic[dna_list2[i]] = coverage - len(record[i])
+		base_list = []
+		for item in base_dic.items():
+			base_list.append(item[1])
+		# print(base_list, base_l[base_list.index(max(base_list))])
+		recover_list.append(base_l[base_list.index(max(base_list))])
+	dna = ''.join(recover_list)
 	return dna
 
 
