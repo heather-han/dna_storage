@@ -16,8 +16,8 @@ def gui():
     lb.grid(row=0, columnspan=3)
     lb2 = tk.Label(root, text='This is the GUI for encoding file to DNA and convert it back.')
     lb2.grid(row=1, columnspan=3)
-    lb3 = tk.Label(root, text='')
-    lb3.grid(row=2, columnspan=3)
+    lb3 = tk.Label(root, text='Do you want to compress the file?')
+    lb3.grid(row=2, column=0)
     lb4 = tk.Label(text='Please enter the format of the file you choose: ')
     lb4.grid(row=3, column=0)
     lb5 = tk.Label(root, text='')
@@ -29,6 +29,12 @@ def gui():
     e2.insert(tk.END, '0.0001')
     e2.grid(row=4, column=1)
     e1.grid(row=3, column=1)
+    def choose():
+        if v.get() == 1:
+            Flag = True
+        else:
+            Flag = False
+        return Flag
     def Encode():
         folder_path = tkf.askdirectory()
         entry = e1.get()
@@ -37,7 +43,8 @@ def gui():
             do_nothing = folder_path[0]
             lb5.config(text='encoding ...')
             lb5.update()
-            encode_i.main(folder_path, entry)
+            print()
+            encode_i.main(folder_path, entry, compress=choose())
             lb5.config(text='Done!')
             lb5.update()
 
@@ -62,6 +69,13 @@ def gui():
             lb5.update()
         except:
             lb3.config(text='Please choose a file folder')
+    LANGS = [
+        ('Yes', 1),
+        ('No', 2)]
+    v = tk.IntVar()
+    for lang, num in LANGS:
+        b = tk.Radiobutton(root, text=lang, variable=v, value=num, command=choose)
+        b.grid(row=2, column=num)
     bt1 = tk.Button(root, text='decode', width=10, command=Decode)
     bt2 = tk.Button(root, text='encode', width=10, command=Encode)
     bt3 = tk.Button(root, text='exit', width=10, command=root.quit)
