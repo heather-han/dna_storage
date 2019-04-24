@@ -32,7 +32,7 @@ def gui():
             do_nothing = folder_path[0]
             lb5.config(text='encoding ...')
             lb5.update()
-            encode.main(folder_path, entry)
+            encode_i.main(folder_path, entry)
             lb5.config(text='Done!')
             lb5.update()
 
@@ -45,7 +45,7 @@ def gui():
             do_nothing = folder_path[0]
             lb5.config(text='decoding ....')
             lb5.update()
-            decode.main(folder_path)
+            decode_i.main(folder_path)
             lb5.config(text='Done!')
             lb5.update()
         except:
