@@ -5,6 +5,7 @@
 *.7z
 *.gz
 other/
+reports/*temp*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

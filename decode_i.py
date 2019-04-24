@@ -1,6 +1,11 @@
 import os
+import copy
+import random
+from tqdm import tqdm
+
 
 def main(path):
+	error_rate = 0.0001
 	name_list = []
 	file_list = []
 	# walk through the folder, pick out the .dna file
@@ -27,7 +32,7 @@ def main(path):
 			# determine if error should be introduced
 			if error_rate > 0.0:
 				print('introducing error with error rate %.3f...' %error_rate)
-				dna = add_error(dna, bases, error_rate=0.0001)
+				dna = add_error(dna, bases, error_rate)
 
 			print('decoding to bits...')
 			bits = decode(dna, reverse_encoding)
@@ -68,6 +73,7 @@ def decode(dna, reverse_encoding):
 
 
 def bits_to_bytes(bits, out_file):
+	""" Convert from bits to bytes and write to output file """
 	with open(out_file, 'wb') as f:
 		for i in range(0, len(bits), 8):
 			a = bits[i: i+8]

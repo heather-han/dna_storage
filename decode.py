@@ -71,6 +71,7 @@ def decode(dna, reverse_encoding):
 
 
 def bits_to_bytes(bits, out_file):
+	""" Convert from bits to bytes and write to output file """
 	with open(out_file, 'wb') as f:
 		for i in range(0, len(bits), 8):
 			a = bits[i: i+8]
