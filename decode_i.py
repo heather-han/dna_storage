@@ -4,8 +4,7 @@ import random
 from tqdm import tqdm
 
 
-def main(path):
-	error_rate = 0.0001
+def main(path, error_rate=0.0001):
 	name_list = []
 	file_list = []
 	# walk through the folder, pick out the .dna file
