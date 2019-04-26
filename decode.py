@@ -12,8 +12,10 @@ from tqdm import tqdm
 
 
 def main():
-	fn_in = sys.argv[1]
-	fn_recovered = fn_in.split('.')[0] + '_recovered'
+	fn = sys.argv[1].split('.')
+	fn_dna = fn[0] + '.dna'
+	fn_recovered = fn[0] + '_recovered.' + fn[1]
+	print(fn, fn_recovered)
 
 	# var to specify how much error to introduce
 	error_rate = float(sys.argv[2])
@@ -24,8 +26,8 @@ def main():
 	bases = [val for (key, val) in encoding.items()]
 
 	# read in file, convert from dna to bits, then write to bytes to recover the original data
-	with open(fn_in, 'r') as f_in:
-		dna = f_in.read()
+	with open(fn_dna, 'r') as f_dna:
+		dna = f_dna.read()
 
 		# determine if error should be introduced
 		if error_rate > 0.0:

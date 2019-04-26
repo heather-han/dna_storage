@@ -1,7 +1,7 @@
 # project-spefic files
 *.dna
 *.zip
-*.recovered
+*recovered*
 *.7z
 *.gz
 other/
