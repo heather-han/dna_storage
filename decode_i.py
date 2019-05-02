@@ -2,6 +2,7 @@ import os
 import copy
 import random
 from tqdm import tqdm
+import collections
 
 
 def main(path, error_rate=0.1):
@@ -31,7 +32,8 @@ def main(path, error_rate=0.1):
 			# determine if error should be introduced
 			if error_rate > 0.0:
 				print('introducing error with error rate %.3f...' %error_rate)
-				dna = add_error(dna, bases, error_rate)
+				dna = add_indel_error(dna, bases, error_rate)
+				# dna = add_error(dna, bases, error_rate)
 
 			print('decoding to bits...')
 			bits = decode(dna, reverse_encoding)
@@ -42,7 +44,7 @@ def main(path, error_rate=0.1):
 	print('Decoding finished!')
 
 
-def add_error(dna, bases, error_rate, coverage=20):
+def add_error(dna, bases, error_rate, coverage=10):
 	dna_list2 = [i for i in dna]
 	dna_list = copy.deepcopy(dna_list2)
 	record = [[] for i in dna]
@@ -70,6 +72,33 @@ def add_error(dna, bases, error_rate, coverage=20):
 		recover_list.append(base_l[base_list.index(max(base_list))])
 	dna = ''.join(recover_list)
 	return dna
+
+def add_indel_error(dna, bases, error_rate, indel_max_error_rate=0.01, coverage=100):
+	dna_list = [i for i in dna]
+	dna_list2 = copy.deepcopy(dna_list)
+	length_list = []
+	for coverages in tqdm(range(coverage)):
+		choose = random.randint(1, 100)
+		if choose < 2:
+			insertion_or_del = random.randint(0, 1)
+			indel_probability = random.uniform(0, indel_max_error_rate)
+			indel_length = int(indel_probability * len(dna_list2))
+			indel_position = random.randint(0, len(dna_list2) - indel_length)
+			if insertion_or_del == 0:
+				dna_list2 = dna_list2[0: indel_position] + dna_list2[indel_position + indel_length: len(dna_list2)]
+			else:
+				insertion_segmant = []
+				choice = ['A', 'C', 'G', 'T']
+				for i in range(indel_length):
+					insertion_segmant.append(random.choice(choice))
+				dna_list2 = dna_list2[0: indel_position] + insertion_segmant + dna_list2[indel_position: len(dna_list2)]
+		else:
+			pass
+		length_list.append(len(dna_list2))
+		count = collections.Counter(length_list)
+	dna = add_error(dna, bases, error_rate, coverage=max(count.values()))
+	return dna
+
 
 
 def decode(dna, reverse_encoding):
