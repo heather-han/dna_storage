@@ -15,16 +15,19 @@ def main():
 	encoding = {'00': 'A', '01': 'C', '10': 'G', '11': 'T'}
 	reverse_encoding = {val: key for (key, val) in encoding.items()}
 
-	# read in file, convert to bits, and encode to dna
+	# read in file
 	with open(fn_in, 'rb') as f_in:
 		data = f_in.read()
-		# print(data[:50])
-		print('converting to bits...')
-		bits = convert_to_bits(data)
-		print('encoding...')
-		dna = encode(bits, encoding)
-		with open(fn_out, 'w') as f_out:
-			f_out.write(dna)
+
+	# convert to bits
+	print('converting to bits...')
+	bits = convert_to_bits(data)
+
+	# encode to dna
+	print('encoding...')
+	dna = encode(bits, encoding)
+	with open(fn_out, 'w') as f_out:
+		f_out.write(dna)
 
 
 def convert_to_bits(data):
@@ -34,16 +37,13 @@ def convert_to_bits(data):
 		bits = bin(c)[2:]
 		bits = '00000000'[len(bits):] + bits
 		result.extend(bits)
-		# result.extend([int(b) for b in bits])
 	return ''.join([i for i in result])
 
 
 def encode(bits, encoding):
 	""" Encode bits into DNA sequence """
 	dna = ""
-	# print(len(bits))
 	length = len(bits) - len(bits)%2
-	# print(length)
 	for i in range(0, length, 2):
 		dna += encoding[bits[i:i+2]]
 	return str(dna)

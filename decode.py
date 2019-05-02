@@ -8,14 +8,13 @@
 import sys
 import copy
 import random
-from tqdm import tqdm
 
 
 def main():
-	fn = sys.argv[1].split('.')
-	fn_dna = fn[0] + '.dna'
-	fn_recovered = fn[0] + '_recovered.' + fn[1]
-	print(fn, fn_recovered)
+	fn = sys.argv[1]
+	fn_arr = fn.split('.')
+	fn_dna = fn_arr[0] + '.dna'
+	fn_recovered = fn_arr[0] + '_recovered.' + fn_arr[1]
 
 	# var to specify how much error to introduce
 	error_rate = float(sys.argv[2])
@@ -25,27 +24,29 @@ def main():
 	reverse_encoding = {val: key for (key, val) in encoding.items()}
 	bases = [val for (key, val) in encoding.items()]
 
-	# read in file, convert from dna to bits, then write to bytes to recover the original data
+	# read in dna sequence
 	with open(fn_dna, 'r') as f_dna:
 		dna = f_dna.read()
 
-		# determine if error should be introduced
-		if error_rate > 0.0:
-			print('introducing error with error rate %.3f...' %error_rate)
-			dna = add_error(dna, bases, error_rate)
+	# determine if error should be introduced
+	if error_rate > 0.0:
+		print('introducing error with error rate %.3f...' %error_rate)
+		dna = add_error(dna, bases, error_rate)
 
-		print('decoding to bits...')
-		bits = decode(dna, reverse_encoding)
+	# convert from dna to bits
+	print('decoding to bits...')
+	bits = decode(dna, reverse_encoding)
 
-		print('converting from bits to original format...')
-		bits_to_bytes(bits, fn_recovered)
+	# write to bytes to recover the original data
+	print('converting from bits to original format...')
+	bits_to_bytes(bits, fn_recovered)
 
 	print('Decoding finished!')
 
 
 def add_error(dna, bases, error_rate):
 	dna_list = [i for i in dna]
-	for i in tqdm(range(int(len(dna) * error_rate))):
+	for i in range(int(len(dna) * error_rate)):
 		idx = random.randint(0, len(dna) - 1)
 
 		# exclude the current base from possible bases

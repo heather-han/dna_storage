@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+ERROR_RATE=0.001
+
 # remove all files not containing raw data from the data folder
 rm data/*recovered*
 rm data/*.dna
@@ -15,30 +17,37 @@ ls -l data/* > results/original_file_sizes
 
 # runtimes for uncompressed files
 rm results/runtime
-enc_times=()
-dec_times=()
 for (( i=0;i<${#files[@]};i++ )); do
 	filename=`cut -d "." -f1 <<< ${files[i]}`
+	ending=`cut -d "." -f2 <<< ${files[i]}`
 
 	# time encoding the file
 	echo "Encoding ${files[i]}..."
 	enc_time="$(time (python encode.py ${files[i]}) 2>&1 1>/dev/null )"
-	enc_times=( ${enc_times[@]} enc_time )
 	echo "Encode ${files[i]}: $enc_time" >> "results/runtime"
 
 	# time decoding the file
 	echo "Decoding ${files[i]}..."
-	dec_time="$(time (python decode.py $filename.dna 0.0) 2>&1 1>/dev/null )"
-	dec_times=( ${dec_times[@]} dec_time )
+	dec_time="$(time (python decode.py ${files[i]} $ERROR_RATE) 2>&1 1>/dev/null )"
 	echo "Decode ${files[i]}: $dec_time" >> "results/runtime"
+
+	# Compute the hex level accuracy of the recovered file against the original file
+	xxd ${files[i]} > $filename".hex"
+	xxd $filename"_recovered.$ending" > $filename"_recovered.hex"
+	diff=`cmp -l $filename".hex" $filename"_recovered.hex" | wc -l`
+	numlines=`wc -l $filename".hex" | awk '{print $1}'`
+	hex_size="$((16 * $numlines))"  # approximate number of hex characters
+	accuracy=`bc -l <<< "$diff/$hex_size*100"`
+	echo "Error ${files[i]}: $diff/$hex_size=$accuracy%" >> "results/runtime"
+
+	rm $filename".hex"
+	rm $filename"_recovered.hex"
 done
 
 
 # runtimes for zip compressed files
 rm results/runtime_zip
 rm results/file_sizes_zip
-enc_times=()
-dec_times=()
 for (( i=0;i<${#files[@]};i++ )); do
 	filename=`cut -d "." -f1 <<< ${files[i]}`
 
@@ -54,22 +63,30 @@ for (( i=0;i<${#files[@]};i++ )); do
 	# time encoding the file
 	echo "Encoding ${files[i]}..."
 	enc_time="$(time (python encode.py ${files[i]}.zip) 2>&1 1>/dev/null )"
-	enc_times=( ${enc_times[@]} enc_time )
 	echo "Encode ${files[i]}: $enc_time" >> "results/runtime_zip"
 
 	# time decoding the file
 	echo "Decoding ${files[i]}..."
-	dec_time="$(time (python decode.py $filename.zip 0.0) 2>&1 1>/dev/null )"
-	dec_times=( ${dec_times[@]} dec_time )
+	dec_time="$(time (python decode.py ${files[i]}.zip $ERROR_RATE) 2>&1 1>/dev/null )"
 	echo "Decode ${files[i]}: $dec_time" >> "results/runtime_zip"
+
+	# Compute the hex level accuracy of the recovered file against the original file
+	xxd ${files[i]} > $filename".hex"
+	xxd $filename"_recovered.$ending" > $filename"_recovered.hex"
+	diff=`cmp -l $filename".hex" $filename"_recovered.hex" | wc -l`
+	numlines=`wc -l $filename".hex" | awk '{print $1}'`
+	hex_size="$((16 * $numlines))"  # approximate number of hex characters
+	accuracy=`bc -l <<< "$diff/$hex_size*100"`
+	echo "Error ${files[i]}: $diff/$hex_size=$accuracy%" >> "results/runtime_zip"
+
+	rm $filename".hex"
+	rm $filename"_recovered.hex"
 done
 
 
 # runtimes for gzip compressed files
 rm results/runtime_gzip
 rm results/file_sizes_gzip
-enc_times=()
-dec_times=()
 for (( i=0;i<${#files[@]};i++ )); do
 	filename=`cut -d "." -f1 <<< ${files[i]}`
 
@@ -85,22 +102,30 @@ for (( i=0;i<${#files[@]};i++ )); do
 	# time encoding the file
 	echo "Encoding ${files[i]}..."
 	enc_time="$(time (python encode.py ${files[i]}.gz) 2>&1 1>/dev/null )"
-	enc_times=( ${enc_times[@]} enc_time )
 	echo "Encode ${files[i]}: $enc_time" >> "results/runtime_gzip"
 
 	# time decoding the file
 	echo "Decoding ${files[i]}..."
-	dec_time="$(time (python decode.py $filename.gz 0.0) 2>&1 1>/dev/null )"
-	dec_times=( ${dec_times[@]} dec_time )
+	dec_time="$(time (python decode.py ${files[i]}.gz $ERROR_RATE) 2>&1 1>/dev/null )"
 	echo "Decode ${files[i]}: $dec_time" >> "results/runtime_gzip"
+
+	# Compute the hex level accuracy of the recovered file against the original file
+	xxd ${files[i]} > $filename".hex"
+	xxd $filename"_recovered.$ending" > $filename"_recovered.hex"
+	diff=`cmp -l $filename".hex" $filename"_recovered.hex" | wc -l`
+	numlines=`wc -l $filename".hex" | awk '{print $1}'`
+	hex_size="$((16 * $numlines))"  # approximate number of hex characters
+	accuracy=`bc -l <<< "$diff/$hex_size*100"`
+	echo "Error ${files[i]}: $diff/$hex_size=$accuracy%" >> "results/runtime_gzip"
+
+	rm $filename".hex"
+	rm $filename"_recovered.hex"
 done
 
 
 # runtimes for 7zip compressed file
 rm results/runtime_7zip
 rm results/file_sizes_7zip
-enc_times=()
-dec_times=()
 for (( i=0;i<${#files[@]};i++ )); do
 	filename=`cut -d "." -f1 <<< ${files[i]}`
 
@@ -116,12 +141,22 @@ for (( i=0;i<${#files[@]};i++ )); do
 	# time encoding the file
 	echo "Encoding ${files[i]}..."
 	enc_time="$(time (python encode.py ${files[i]}.7z) 2>&1 1>/dev/null )"
-	enc_times=( ${enc_times[@]} enc_time )
 	echo "Encode ${files[i]}: $enc_time" >> "results/runtime_7zip"
 
 	# time decoding the file
 	echo "Decoding ${files[i]}..."
-	dec_time="$(time (python decode.py $filename.7zip 0.0) 2>&1 1>/dev/null )"
-	dec_times=( ${dec_times[@]} dec_time )
+	dec_time="$(time (python decode.py ${files[i]}.7z $ERROR_RATE) 2>&1 1>/dev/null )"
 	echo "Decode ${files[i]}: $dec_time" >> "results/runtime_7zip"
+
+	# Compute the hex level accuracy of the recovered file against the original file
+	xxd ${files[i]} > $filename".hex"
+	xxd $filename"_recovered.$ending" > $filename"_recovered.hex"
+	diff=`cmp -l $filename".hex" $filename"_recovered.hex" | wc -l`
+	numlines=`wc -l $filename".hex" | awk '{print $1}'`
+	hex_size="$((16 * $numlines))"  # approximate number of hex characters
+	accuracy=`bc -l <<< "$diff/$hex_size*100"`
+	echo "Error ${files[i]}: $diff/$hex_size=$accuracy%" >> "results/runtime_7zip"
+
+	rm $filename".hex"
+	rm $filename"_recovered.hex"
 done
